@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory>
+
+        <Preference android:title="设置"
+            android:layout="@layout/preference"/>
+
+        <SwitchPreference
+            android:key="switch"
+            android:title="自动更新"
+            android:padding="20dp"
+            android:textSize="30sp"/>
+
+        <ListPreference
+            android:key="list"
+            android:title="更新间隔"
+            android:summary="1小时"
+            android:dialogTitle="更新间隔"
+            android:entries="@array/updateName"
+            android:entryValues="@array/updateValue"
+            android:defaultValue="1小时"
+            android:paddingLeft="20dp"
+            android:padding="20dp"
+            android:textSize="30sp"/>
+
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

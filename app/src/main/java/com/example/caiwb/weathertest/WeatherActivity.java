@@ -22,9 +22,9 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.caiwb.weathertest.gson.Forecast;
 import com.example.caiwb.weathertest.gson.Weather;
-import com.example.caiwb.weathertest.service.AutoUpdateService;
 import com.example.caiwb.weathertest.util.HttpUtil;
 import com.example.caiwb.weathertest.util.Utility;
+import com.example.caiwb.weathertest.util.Utils;
 
 import java.io.IOException;
 
@@ -50,9 +50,15 @@ public class WeatherActivity extends AppCompatActivity {
 
     private TextView titleUpdateTime;
 
+    private Button navSetting;
+
     private TextView degreeText;
 
     private TextView weatherInfoText;
+
+    private ImageView weatherImg;
+
+    private TextView weatherWeek;
 
     private LinearLayout forecastLayout;
 
@@ -76,16 +82,19 @@ public class WeatherActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= 21) {
             View decorView = getWindow().getDecorView();
             decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
-            getWindow().setStatusBarColor(Color.TRANSPARENT);
+                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);//活动布局显示在状态栏上面
+            getWindow().setStatusBarColor(Color.TRANSPARENT);//将状态栏颜色置为透明
         }
         setContentView(R.layout.activity_weather);
         bingPicImg = findViewById(R.id.bing_pic_img);
         weatherLayout = findViewById(R.id.weather_layout);
         titleCity = findViewById(R.id.title_city);
         titleUpdateTime = findViewById(R.id.title_update_time);
+        navSetting = findViewById(R.id.nav_setting);
         degreeText = findViewById(R.id.degree_text);
         weatherInfoText = findViewById(R.id.weather_info_text);
+        weatherImg = findViewById(R.id.weather_img);
+        weatherWeek = findViewById(R.id.weather_day);
         forecastLayout = findViewById(R.id.forecast_layout);
         aqiText = findViewById(R.id.aqi_text);
         pm25Text = findViewById(R.id.pm25_text);
@@ -117,6 +126,13 @@ public class WeatherActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 drawerLayout.openDrawer(GravityCompat.START);
+            }
+        });
+        navSetting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(WeatherActivity.this, PreferencesActivity.class);
+                startActivity(intent);
             }
         });
         String bingPic = prefs.getString("bing_pic", null);
@@ -202,17 +218,21 @@ public class WeatherActivity extends AppCompatActivity {
         titleUpdateTime.setText(updateTime);
         degreeText.setText(degree);
         weatherInfoText.setText(weatherInfo);
+        weatherImg.setImageResource(Utils.getWeatherImg(weatherInfo));
+        weatherWeek.setText(Utils.getWeek(weather.basic.update.updateTime.split(" ")[0]));
         forecastLayout.removeAllViews();
         for (Forecast forecast : weather.forecastList) {
             View view = LayoutInflater.from(this).inflate(R.layout.forecast_item, forecastLayout, false);
             TextView dataText = view.findViewById(R.id.date_text);
+            TextView dataWeek = view.findViewById(R.id.data_week);
             TextView infoText = view.findViewById(R.id.info_text);
-            TextView maxText = view.findViewById(R.id.max_text);
+            ImageView image = view.findViewById(R.id.image_weather);
             TextView minText = view.findViewById(R.id.min_text);
             dataText.setText(forecast.date);
+            dataWeek.setText(Utils.getWeek(forecast.date));
             infoText.setText(forecast.more.info);
-            maxText.setText(forecast.temperature.max);
-            minText.setText(forecast.temperature.min);
+            image.setImageResource(Utils.getWeatherImg(forecast.more.info));
+            minText.setText(forecast.temperature.min + "~" + forecast.temperature.max);
             forecastLayout.addView(view);
         }
         if (weather.aqi != null) {
@@ -226,7 +246,7 @@ public class WeatherActivity extends AppCompatActivity {
         carWashText.setText(carWash);
         sportText.setText(sport);
         weatherLayout.setVisibility(View.VISIBLE);
-        Intent intent = new Intent(this, AutoUpdateService.class);
-        startService(intent);
+//        Intent intent = new Intent(this, AutoUpdateService.class);
+//        startService(intent);
     }
 }
